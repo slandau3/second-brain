@@ -1,0 +1,630 @@
+/* Matches the Worker dashboard's look (public/index.html) with system fonts
+   only — setup must render fully offline. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #ffffff;
+  --bg-card: #fcfbf7;
+  --accent: #fd540a;
+  --accent-press: #a83200;
+  --accent-soft: rgba(253, 84, 10, 0.09);
+  --on-accent: #161616;
+  --text-primary: #161616;
+  --text-secondary: #68635f;
+  --text-tertiary: #96908b;
+  --border: rgba(22, 22, 22, 0.11);
+  --danger: #b42318;
+  --ok: #18794e;
+  --font-serif: Georgia, "Times New Roman", serif;
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  cursor: default;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+.screen {
+  width: 100%;
+  max-width: 520px;
+  animation: fade-in 0.45s var(--ease);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.brand {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 22px;
+  position: relative;
+}
+
+.brand::after {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  border: 1px solid var(--accent-soft);
+}
+
+.brand img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+h1 {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.lede {
+  color: var(--text-secondary);
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto 30px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 14px;
+}
+
+button {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 13px;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.12s var(--ease), opacity 0.18s;
+}
+
+button:active {
+  transform: scale(0.985);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+  transform: none;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 15px;
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-press);
+}
+
+.btn-secondary {
+  padding: 9px 16px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 13.5px;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(253, 84, 10, 0.14);
+}
+
+.btn-ghost {
+  background: none;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 13.5px;
+  padding: 8px 12px;
+}
+
+.btn-danger {
+  padding: 9px 16px;
+  background: rgba(180, 35, 24, 0.08);
+  color: var(--danger);
+  font-size: 13.5px;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: rgba(180, 35, 24, 0.16);
+}
+
+.logout-section {
+  margin-top: 26px;
+  padding-top: 16px;
+  border-top: 0.5px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-ghost:hover {
+  color: var(--text-primary);
+}
+
+input[type="password"],
+input[type="text"] {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 0.5px solid var(--border);
+  border-radius: 13px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  user-select: text;
+}
+
+input::placeholder {
+  color: var(--text-tertiary);
+}
+
+input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+select.locale-select {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px 14px;
+  background: var(--bg-card);
+  border: 0.5px solid var(--border);
+  border-radius: 13px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: var(--text-primary);
+  outline: none;
+  cursor: pointer;
+}
+
+select.locale-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.settings-card {
+  margin-bottom: 14px;
+}
+
+.field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin-bottom: 14px;
+}
+
+/* A text input with a small action button tucked into its right edge. */
+.input-wrap {
+  position: relative;
+}
+
+.input-wrap input {
+  padding-right: 48px;
+}
+
+.input-action {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  padding: 7px;
+  border-radius: 9px;
+  cursor: pointer;
+  color: var(--accent);
+}
+
+.input-action:hover {
+  background: var(--accent-soft);
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.hint.error {
+  color: var(--danger);
+}
+
+.strength {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 2px 0;
+}
+
+.strength-track {
+  flex: 1;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 3px;
+  background: var(--danger);
+  transition: width 0.25s var(--ease), background 0.25s;
+}
+
+.strength-label {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  min-width: 64px;
+  text-align: right;
+}
+
+.notice {
+  display: flex;
+  gap: 10px;
+  background: var(--accent-soft);
+  border-radius: 13px;
+  padding: 13px 15px;
+  font-size: 13.5px;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+}
+
+.notice.error {
+  background: rgba(180, 35, 24, 0.08);
+  color: var(--danger);
+}
+
+.checklist {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.checklist li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 6px;
+  font-size: 15px;
+  color: var(--text-tertiary);
+  transition: color 0.3s;
+}
+
+.checklist li.running,
+.checklist li.done {
+  color: var(--text-primary);
+}
+
+.check-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background: var(--border);
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+
+li.done .check-icon {
+  background: var(--ok);
+  color: #fff;
+}
+
+li.error .check-icon {
+  background: var(--danger);
+  color: #fff;
+}
+
+.spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid var(--accent-soft);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 4px;
+}
+
+.row + .row {
+  border-top: 0.5px solid var(--border);
+}
+
+.row-title {
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(22, 22, 22, 0.06);
+  color: var(--text-secondary);
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+.badge.on {
+  background: rgba(24, 121, 78, 0.12);
+  color: var(--ok);
+}
+
+.row-sub {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.row-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.url-card {
+  margin-bottom: 14px;
+}
+
+.url-label {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 3px;
+}
+
+.url-desc {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.url-line {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.url-value {
+  flex: 1;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  background: var(--bg);
+  border: 0.5px solid var(--border);
+  border-radius: 9px;
+  padding: 9px 11px;
+  overflow-x: auto;
+  white-space: nowrap;
+  user-select: text;
+}
+
+.actions-spread {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.account-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.account-list button {
+  width: 100%;
+  text-align: left;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 0.5px solid var(--border);
+  border-radius: 13px;
+  font-weight: 500;
+}
+
+.account-list button:hover {
+  border-color: var(--accent);
+}
+
+.dry-run-badge {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 4px 9px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.footnote {
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--text-tertiary);
+  margin-top: 18px;
+}
+
+/* Category rows in the integrations browser drill into a provider list. */
+.row-tappable {
+  cursor: pointer;
+  border-radius: 8px;
+  padding-inline: 8px;
+  margin-inline: -8px;
+}
+.row-tappable:hover {
+  background: var(--surface-2, rgba(0, 0, 0, 0.04));
+}
+.row-tappable .row-title i {
+  margin-right: 8px;
+  opacity: 0.75;
+}
+
+
+/* The Connection details window is a reference panel, not a setup step. It uses
+   a rail plus one pane so each screen answers a single question, instead of the
+   single tall column the setup flow uses. */
+.panel {
+  display: grid;
+  grid-template-columns: 188px minmax(0, 1fr);
+  gap: 28px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 26px 30px 34px;
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .panel {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: sticky;
+  top: 26px;
+}
+
+@media (max-width: 720px) {
+  .rail {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+.rail-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  padding: 9px 12px;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.rail-btn:hover {
+  background: var(--bg-card);
+}
+
+.rail-btn.on {
+  background: var(--bg-card);
+  border: 0.5px solid var(--border);
+  font-weight: 600;
+}
+
+.pane {
+  min-width: 0;
+}
+
+.pane-title {
+  margin: 0 0 4px;
+  font-size: 21px;
+  font-weight: 650;
+}
+
+.pane-desc {
+  margin: 0 0 16px;
+  color: var(--text-dim);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+/* Category heading inside the integrations pane. Everything sits on one screen
+   under its heading, so there is no second level to get lost in. */
+.group-head {
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 18px 0 2px;
+}
+
+.card > .group-head:first-child {
+  margin-top: 0;
+}
+
