@@ -10,6 +10,7 @@
 
 import type { IntegrationProvider } from "./framework";
 import { notionProvider } from "./notion";
+import { gdocsProvider } from "./gdocs";
 import { makeCalendarProvider } from "./calendar";
 import { makeEmailProvider } from "./email";
 
@@ -62,6 +63,7 @@ export const emailIcloud = makeEmailProvider({
 
 export const INTEGRATION_PROVIDERS: Record<string, IntegrationProvider> = {
   [notionProvider.id]: notionProvider,
+  [gdocsProvider.id]: gdocsProvider,
   [calendarGoogle.id]: calendarGoogle,
   [calendarOutlook.id]: calendarOutlook,
   [calendarIcloud.id]: calendarIcloud,
@@ -88,6 +90,19 @@ export {
   SYNC_PAGE_BATCH,
 } from "./notion";
 export type { NotionPageMeta, SyncPlan } from "./notion";
+export {
+  gdocsProvider,
+  gdocsValidateToken,
+  gdocsListDocs,
+  gdocsFetchDocText,
+  buildDocContent,
+  computeGdocsPlan,
+  ensureAccessToken,
+  exchangeCodeForTokens,
+  GDOCS_SCOPE,
+  SYNC_DOC_BATCH,
+} from "./gdocs";
+export type { GdocsDocMeta, GdocsSyncPlan, GoogleTokenResponse } from "./gdocs";
 export {
   makeCalendarProvider,
   parseAndExpand,

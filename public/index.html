@@ -2875,6 +2875,17 @@
           AUTH_TOKEN = tok
           showApp()
         }
+
+        // Landing back from an OAuth connect flow (e.g. Google Docs): surface
+        // the outcome and reopen the integrations sheet, then clean the URL.
+        const params = new URLSearchParams(window.location.search)
+        const connected = params.get('integration-connected')
+        const oauthError = params.get('integration-error')
+        if ((connected || oauthError) && tok) {
+          if (oauthError) integrationsNotice = decodeURIComponent(oauthError)
+          openIntegrations()
+          window.history.replaceState({}, '', window.location.pathname)
+        }
       }
 
       async function connect() {
@@ -3746,6 +3757,7 @@
 
       // ── Integrations (registry-driven) ────────────────────────────────────
       let integrationsInfo = []
+      let integrationsNotice = null // one-shot banner (e.g. failed OAuth callback)
       let currentCategory = null // null = category list (level 1); else a category id (level 2)
 
       // Ordered category groups for the two-level integrations UI. Only categories
@@ -3759,6 +3771,7 @@
 
       const INTEGRATION_ICONS = {
         notion: 'ti-brand-notion',
+        gdocs: 'ti-brand-google',
         'calendar-google': 'ti-brand-google',
         'calendar-outlook': 'ti-brand-windows',
         'calendar-icloud': 'ti-brand-apple',
@@ -3820,8 +3833,12 @@
       function renderIntegrations() {
         renderIntegrationsChrome()
         const el = document.getElementById('integrations-list')
+        const notice = integrationsNotice
+          ? `<div class="integration-error" style="margin-bottom: 8px">${escHtml(integrationsNotice)}</div>`
+          : ''
+        integrationsNotice = null
         if (!integrationsInfo.length) {
-          el.innerHTML = '<p class="digest-note">No integrations available.</p>'
+          el.innerHTML = notice + '<p class="digest-note">No integrations available.</p>'
           return
         }
         if (currentCategory) {
@@ -3829,10 +3846,10 @@
             .filter((i) => integrationCategoryId(i) === currentCategory)
             .map(renderIntegrationCard)
             .join('')
-          el.innerHTML = cards || '<p class="digest-note">Nothing here yet.</p>'
+          el.innerHTML = notice + (cards || '<p class="digest-note">Nothing here yet.</p>')
           return
         }
-        el.innerHTML = presentCategories().map(renderCategoryRow).join('')
+        el.innerHTML = notice + presentCategories().map(renderCategoryRow).join('')
       }
 
       function renderCategoryRow(cat) {
@@ -3862,6 +3879,18 @@
         const icon = INTEGRATION_ICONS[p] || 'ti-plug'
         if (!info.connected) {
           const hint = p === 'notion' ? NOTION_HINT : (info.connectHint || '')
+          // OAuth2 providers connect via a browser redirect, not a pasted token.
+          if (info.authKind === 'oauth2') {
+            return `
+              <div class="integration-row">
+                <div class="integration-head"><i class="ti ${icon}"></i><span>${escHtml(info.name)}</span><span class="integration-state">Not connected</span></div>
+                <p class="digest-note">${hint}</p>
+                <div class="integration-connect-row">
+                  <button class="digest-btn" onclick="connectOAuth('${p}', this)">${escHtml(info.oauthButtonLabel || 'Connect')}</button>
+                </div>
+                <div class="integration-error" id="err-${p}"></div>
+              </div>`
+          }
           const label = escHtml(info.connectLabel || 'Paste your secret')
           const isEmail = p.startsWith('email')
           let inputs
@@ -3899,6 +3928,29 @@
               <button class="digest-btn danger" onclick="disconnectIntegration('${p}', this)">Disconnect</button>
             </div>
           </div>`
+      }
+
+      async function connectOAuth(provider, btn) {
+        const errEl = document.getElementById(`err-${provider}`)
+        btn.disabled = true
+        btn.textContent = 'Connecting…'
+        errEl.textContent = ''
+        try {
+          const res = await fetch(`${WORKER_URL}/integrations/${provider}/oauth/start`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${AUTH_TOKEN}` },
+          })
+          const data = await res.json()
+          if (!res.ok || !data.ok) throw new Error(data.error || `Error ${res.status}`)
+          // Full-page navigation to the provider's consent screen; Google
+          // returns the browser to /integrations/<provider>/oauth/callback,
+          // which redirects back here with ?integration-connected=<provider>.
+          window.location.href = data.url
+        } catch (e) {
+          errEl.textContent = e.message || 'Connection failed.'
+          btn.disabled = false
+          btn.textContent = 'Connect with Google'
+        }
       }
 
       async function connectIntegration(provider, btn) {

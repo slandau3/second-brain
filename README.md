@@ -24,6 +24,10 @@ Prefer to run it yourself? Use the one-click **[Deploy to Cloudflare](https://de
 >
 > <a href="https://www.producthunt.com/products/second-brain-cloudflare?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_campaign=badge-second-brain-for-ai" target="_blank" rel="noopener noreferrer"><img alt="Second Brain for AI: Persistent memory for Claude, ChatGPT, and Cursor" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=1151393&theme=light&period=daily&t=1780357463637"></a>
 
+## What's new in v2.2
+
+* **Google Docs sync.** Connect your Google account from **Settings → Integrations** with a one-click OAuth flow — your Docs mirror into memory, stay updated as they change, and surface in recall alongside everything else. Read-only by design (the single `drive.readonly` scope), with trashed docs automatically removed from memory.
+
 ## What's new in v2.1
 
 * **Calendar sync.** Connect Google, Outlook, or iCloud calendars from **Settings → Integrations** by pasting your calendar's private iCal (`.ics`) link — no OAuth, no developer setup. Upcoming events sync into memory and stay current, so recall knows what's on your plate; past events are kept as a bounded history.
@@ -80,6 +84,13 @@ Memory is most useful when capturing information is easy. Second Brain connects 
   ```
 
 * **Notion:** Connect your Notion workspace from **Settings → Integrations** in the web dashboard. Create an internal **connection** in the [Notion developer portal](https://app.notion.com/developers/connections) (a connection, not a personal access token — only connections appear in a page's Connections menu), share the pages you want remembered with it, and paste its secret — shared pages sync into memory automatically (nightly, or on demand with **Sync now**) and stay updated as they change in Notion.
+
+* **Google Docs:** Connect your Google account from **Settings → Integrations** with one click — Docs sync into memory automatically (nightly, or on demand with **Sync now**) and stay updated as they change. Read-only (the single `drive.readonly` scope — Second Brain can never edit your Docs), and memories are removed when you trash a doc. Requires a one-time Google Cloud setup, because Google only allows OAuth (no paste-able tokens):
+  1. In the [Google Cloud console](https://console.cloud.google.com/), create a project (or reuse one) and enable the **Google Drive API** under *APIs & Services → Library*.
+  2. Under *APIs & Services → OAuth consent screen*, configure the consent screen (External is fine for personal use — you can stay in "Testing" mode and add yourself as a test user) and add the scope `.../auth/drive.readonly`.
+  3. Under *APIs & Services → Credentials*, create an **OAuth client ID** of type *Web application*, and add `https://<your-worker>.workers.dev/integrations/gdocs/oauth/callback` as an authorized redirect URI.
+  4. Set the client credentials as Worker secrets: `wrangler secret put GOOGLE_CLIENT_ID` and `wrangler secret put GOOGLE_CLIENT_SECRET`.
+
 
 * **Calendar:** Connect Google, Outlook, or iCloud from **Settings → Integrations** and paste your calendar's private **iCal (`.ics`) link** (Google: *your calendar → Integrate calendar → "Secret address in iCal format"*; Outlook: *Calendar → Shared calendars → Publish*; iCloud: *Share Calendar → Public Calendar*). Read-only — upcoming events sync into memory automatically (nightly, or on demand with **Sync now**), and past events are kept as a bounded history.
 

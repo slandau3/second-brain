@@ -27,6 +27,11 @@
 
 export interface IntegrationEnv {
   OAUTH_KV: KVNamespace;
+  // Google OAuth client credentials — only needed by OAuth2 providers
+  // (Google Docs). Optional so deployments without them keep working; the
+  // OAuth connect route fails with a clear setup message when absent.
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
 }
 
 // ─── Provider interface ───────────────────────────────────────────────────────
@@ -44,6 +49,11 @@ export interface IntegrationProvider {
   connectPlaceholder?: string; // input placeholder
   connectHint?: string;        // where to find the secret (may contain safe HTML)
   category?: string;           // settings-UI grouping id: "knowledge" | "calendar" | "email"
+  // "oauth2" providers connect via a browser OAuth redirect flow instead of a
+  // pasted token (see routes/integrations.ts oauth/start + oauth/callback).
+  // The settings UI renders a "Connect with …" button when this is set.
+  authKind?: "token" | "oauth2";
+  oauthButtonLabel?: string;   // e.g. "Connect with Google"
   // Validate a pasted token against the provider's API; returns an account /
   // workspace label for the UI's "Connected to …" confirmation. Throws with a
   // user-presentable message when the token is rejected.
@@ -65,8 +75,15 @@ export interface ItemMapEntry {
 
 export interface IntegrationRecord {
   provider: string;
-  authKind: "token"; // "oauth2" reserved for future providers that require it
-  credentials: { token: string };
+  // "token": credentials.token is the whole credential (Notion secret, packed
+  // email creds). "oauth2": token is a short-lived access token; refreshToken
+  // + expiresAt keep it alive (see gdocs.ts ensureAccessToken).
+  authKind: "token" | "oauth2";
+  credentials: {
+    token: string;
+    refreshToken?: string; // oauth2 only
+    expiresAt?: number;    // oauth2 only — ms epoch when `token` stops working
+  };
   config: Record<string, unknown>; // escape hatch for future per-provider options
   status: "connected" | "error";
   workspaceName: string | null;
@@ -117,7 +134,7 @@ export async function deleteIntegration(env: IntegrationEnv, provider: string): 
 // is write-only from the dashboard's perspective. Presentational hints pass
 // through only when set, so providers that omit them (Notion) are unchanged.
 export function integrationStatus(
-  provider: Pick<IntegrationProvider, "id" | "name" | "connectLabel" | "connectPlaceholder" | "connectHint" | "category">,
+  provider: Pick<IntegrationProvider, "id" | "name" | "connectLabel" | "connectPlaceholder" | "connectHint" | "category" | "authKind" | "oauthButtonLabel">,
   record: IntegrationRecord | null,
 ) {
   return {
@@ -133,6 +150,8 @@ export function integrationStatus(
     ...(provider.connectPlaceholder ? { connectPlaceholder: provider.connectPlaceholder } : {}),
     ...(provider.connectHint ? { connectHint: provider.connectHint } : {}),
     ...(provider.category ? { category: provider.category } : {}),
+    ...(provider.authKind ? { authKind: provider.authKind } : {}),
+    ...(provider.oauthButtonLabel ? { oauthButtonLabel: provider.oauthButtonLabel } : {}),
   };
 }
 
