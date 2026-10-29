@@ -21,6 +21,11 @@ const oauthProvider = new OAuthProvider({
   authorizeEndpoint: "/oauth/authorize",
   tokenEndpoint: "/oauth/token",
   clientRegistrationEndpoint: "/oauth/register",
+  // Library defaults expire refresh tokens 30 days after authorization (not extended on
+  // refresh) and DCR clients after 90 days, which silently disconnects ChatGPT/Claude.ai
+  // connectors. Single-owner server: keep grants until revoked.
+  refreshTokenTTL: undefined,
+  clientRegistrationTTL: undefined,
   // Accept the static AUTH_TOKEN for Claude Desktop + mcp-remote (no browser flow).
   resolveExternalToken: async ({ token, env }) => {
     if (token === (env as Env).AUTH_TOKEN) {
